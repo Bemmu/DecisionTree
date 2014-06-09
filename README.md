@@ -1,9 +1,10 @@
 DecisionTree
 ============
 
-This is a work in progress study project. The aim is for me to learn how to generate decision trees from training data in Python.
+This is a work in progress study project related to the University of Tampere course 'Knowledge Discovery'.
+The aim of this project is for me to learn how to generate decision trees from training data in Python.
 
-The program takes as input a list of cases. Each list item can represent multiple
+The program takes as input a list of case data. Each list item can represent multiple
 training cases that all have the same attributes.
 
 	S = [
@@ -17,4 +18,7 @@ training cases that all have the same attributes.
 	{'Hearing loss':'Yes', 'Injury':'Yes', 'Frequency of vertigo attacks':'1', 'classes' : {'not-BPV':1, 'BPV':0}},
 	{'Hearing loss':'Yes', 'Injury':'Yes', 'Frequency of vertigo attacks':'2', 'classes' : {'not-BPV':30, 'BPV':0}}
 	]
+
+The above is an example of possible input. The first item in the list means that there are three training cases
+classified as 'not-BPM', all having the attributes 'Hearing loss' = 'No', 'Injury' = 'No' and 'Frequency of vertigo attacks' = 0.
 
