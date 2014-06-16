@@ -1,7 +1,7 @@
 DecisionTree
 ============
 
-This is a work in progress study project related to the University of Tampere course 'Knowledge Discovery'.
+This is a work in progress study project related to the University of Tampere course '[Knowledge Discovery](http://www.uta.fi/sis/tie/timu/timu_eng.html)'.
 The aim of this project is for me to learn how to generate decision trees from training data in Python.
 
 # Input
