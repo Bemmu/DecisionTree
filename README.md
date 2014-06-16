@@ -32,5 +32,17 @@ The program produces a text visualization that shows the resulting tree.
 
 ## Equations
 
+To decide which attribute to branch on, some calculations are made based on equations given in the Knowledge Discovery course material. Here are all the equations and their corresponding functions in Python. The code for each function could be much shorter, but includes some prints that make the code a bit more difficult to read but the actual running of the code easier to debug.
+
 The function "H(S)" in the python code implements the equation
 ![Expected information needed to classify an arbitrary case in S](img/hc.png)
+
+The function "H_given_Aj(S, A, Aj)" implements
+![Expected information needed to classify an arbitrary case in S where Aj has the value A](img/h_given_aj.png)
+
+The function "H_for_attribute(S, A)" implements
+![Expected information needed to classify an arbitrary case when
+using the attribute A as root](img/h_for_attribute.png)
+
+The function "I(S, A)" implements
+![Information gained by branching on the attribute A](img/i.png)
