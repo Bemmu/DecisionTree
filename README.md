@@ -37,12 +37,14 @@ To decide which attribute to branch on, some calculations are made based on equa
 The function "H(S)" in the python code implements the equation
 ![Expected information needed to classify an arbitrary case in S](img/hc.png)
 
+
 The function "H_given_Aj(S, A, Aj)" implements
 ![Expected information needed to classify an arbitrary case in S where Aj has the value A](img/h_given_aj.png)
 
+
 The function "H_for_attribute(S, A)" implements
-![Expected information needed to classify an arbitrary case when
-using the attribute A as root](img/h_for_attribute.png)
+![Expected information needed to classify an arbitrary case when using the attribute A as root](img/h_for_attribute.png)
+
 
 The function "I(S, A)" implements
 ![Information gained by branching on the attribute A](img/i.png)
