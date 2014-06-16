@@ -32,8 +32,5 @@ The program produces a text visualization that shows the resulting tree.
 
 ## Equations
 
-The function 
-    def H(S)
-
-Is for the equation
+The function "H(S)" in the python code implements the equation
 ![Expected information needed to classify an arbitrary case in S](img/hc.png)
