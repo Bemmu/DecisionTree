@@ -2,12 +2,12 @@ DecisionTree
 ============
 
 This is a work in progress study project related to the University of Tampere course '[Knowledge Discovery](http://www.uta.fi/sis/tie/timu/timu_eng.html)'.
-The aim of this project is for me to learn how to generate decision trees from training data in Python.
+The aim of this project is for me to learn how to generate decision trees from training data in Python. This is not intended as an actual library for use in any real-world purpose.
 
 # Input
 
 The program takes as input a list of case data. Each list item can represent multiple
-training cases that all have the same attributes.
+training cases that all have the same attributes. 
 
 	S = [
 	{'Hearing loss':'No', 'Injury':'No', 'Frequency of vertigo attacks':'0', 'classes' : {'not-BPV':3, 'BPV':0}},
@@ -21,8 +21,7 @@ training cases that all have the same attributes.
 	{'Hearing loss':'Yes', 'Injury':'Yes', 'Frequency of vertigo attacks':'2', 'classes' : {'not-BPV':30, 'BPV':0}}
 	]
 
-The above is an example of possible input. For instance the first item in the list means that there are three training cases
-classified as 'not-BPM', all having the attributes 'Hearing loss' = 'No', 'Injury' = 'No' and 'Frequency of vertigo attacks' = 0.
+The above is an example of possible input. For instance the first item in the list means that there are three training cases classified as 'not-BPM', all having the attributes 'Hearing loss' = 'No', 'Injury' = 'No' and 'Frequency of vertigo attacks' = 0.
 
 # Output
 
@@ -32,9 +31,11 @@ The program produces a text visualization that shows the resulting tree.
 
 ## Equations
 
-To decide which attribute to branch on, some calculations are made based on equations given in the Knowledge Discovery course material. Here are all the equations and their corresponding functions in Python. The code for each function could be much shorter, but includes some prints that make the code a bit more difficult to read but the actual running of the code easier to debug.
+To understand what is going on here, I recommend watching [this video](https://www.youtube.com/watch?v=-dCtJjlEEgM). The key decision to make is which attribute to split the data on. Some attributes will provide more information than others. 
 
-The function "H(S)" in the python code implements the equation
+To decide which attribute to branch on, some calculations are made based on equations given in the Knowledge Discovery course material. Here are all the equations and their corresponding functions in Python. The code for each function could be much shorter, but includes some printouts that make the code a bit longer but easier to follow while running.
+
+The entropy function "H(S)" in the python code implements the equation
 ![Expected information needed to classify an arbitrary case in S](img/hc.png)
 
 
