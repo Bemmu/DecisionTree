@@ -10,7 +10,14 @@
 #	                 ____|____
 #	                /         \
 #	              leaf       leaf
-
+#
+#
+#	        injury
+#	     ______|_______
+#       /   /     \    \
+#    lol  what  really  cool
+#
+#
 #	        injury
 #	     ______|_______
 #       /              \
@@ -65,10 +72,34 @@ class TextCanvas(object):
 
 		return out
 
-if __name__ == '__main__':
-	import random
-	canvas = TextCanvas()
-	for i in range(0, 10):
-		canvas.set(':-)', random.randint(0, 100), random.randint(0, 20))
+class TextTree(object):
 
-	print canvas
+	# Draw part that looks like          ______|_______
+	#
+	def draw_stem(self, midpoint, stem_length):
+		for i in range(0, stem_length):
+			x = midpoint[0] + i - stem_length/2 
+			ch = '|' if x == midpoint[0] else '_'
+			self.canvas.set(ch, x, midpoint[1])
+
+	# Draw part that looks like        ________|_________
+    #                                 /      /    \      \
+    #                              label  label  label  label
+    #                                |      |      |      |
+    #
+	def draw_branches(self, midpoint, labels):
+		label_line = "  ".join(labels)
+		self.draw_stem(midpoint, len(label_line))
+		self.canvas.set(label_line, midpoint[0] - len(label_line)/2, midpoint[1] + 2)
+
+	def __init__(self, data):
+		self.canvas = TextCanvas()
+		self.draw_branches((0, 0), ['yes', 'no'])
+
+	def __str__(self):
+		return str(self.canvas)
+
+if __name__ == '__main__':
+	data = None
+	text_tree = TextTree(data)
+	print str(text_tree)
