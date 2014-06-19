@@ -57,6 +57,9 @@ class TextCanvas(object):
 		return (min(x_values), min(y_values), max(x_values), max(y_values))
 
 	def __str__(self):
+		if len(self.canvas.keys()) == 0:
+			return ""
+
 		out = ""
 		bounds = self.bounds()
 
@@ -76,25 +79,55 @@ class TextTree(object):
 
 	# Draw part that looks like          ______|_______
 	#
-	def draw_stem(self, midpoint, stem_length):
+	def draw_horizontal_stem(self, midpoint, stem_length):
 		for i in range(0, stem_length):
 			x = midpoint[0] + i - stem_length/2 
 			ch = '|' if x == midpoint[0] else '_'
 			self.canvas.set(ch, x, midpoint[1])
 
 	# Draw part that looks like        ________|_________
-    #                                 /      /    \      \
-    #                              label  label  label  label
-    #                                |      |      |      |
-    #
-	def draw_branches(self, midpoint, labels):
-		label_line = "  ".join(labels)
-		self.draw_stem(midpoint, len(label_line))
-		self.canvas.set(label_line, midpoint[0] - len(label_line)/2, midpoint[1] + 2)
+	#                                 /      /    \      \
+	#                              label  label  label  label
+	#                                |      |      |      |
+	#
+	def draw_branches(self, midpoint, labels, subtree_widths):
+
+		# For purposes of figuring out how to space the labels, imagine the label and subtree
+		# inside a box. To hold them both, the boxes clearly need to be the maximum width of 
+		# label & subtree.
+		#
+		# To draw them properly, lay out these boxes next to each other and make the stem
+		# reach from the center of the leftmost box to the center of the rightmost one.
+		#
+		#         __________|__________
+		#        /       /     \       \ 
+		#    1________________________________
+		#    |#label#|#label#|#label#|#label#|
+		#    |   |       |       |       |   |
+		#    |subtree|subtree|subtree|subtree|
+		#    ''''''''''''''''''''''''''''''''' 
+
+		box_padding = 4
+		box_widths = [box_padding + max(i) for i in zip([len(l) for l in labels], subtree_widths)]
+
+		# Figure out where the center points of each box fall.
+		total_width = sum(box_widths)
+		first_box_leftmost_point = -total_width/2 - midpoint[0]  # 1) in the picture
+		first_box_center_point = first_box_leftmost_point + box_widths[0]/2
+		last_box_rightmost_point = total_width/2 + midpoint[0]
+		last_box_center_point = last_box_rightmost_point - box_widths[-1]/2
+		stem_length = last_box_center_point - first_box_center_point
+
+		# Draw horizontal stem to connect the farthest boxes.
+		self.draw_horizontal_stem(midpoint, stem_length)
+
+#		label_line = "  ".join(labels)
+#		self.draw_stem(midpoint, len(label_line))
+#		self.canvas.set(label_line, midpoint[0] - len(label_line)/2, midpoint[1] + 2)
 
 	def __init__(self, data):
 		self.canvas = TextCanvas()
-		self.draw_branches((0, 0), ['yes', 'no'])
+		self.draw_branches((0, 0), ['yes', 'no'], [4, 10])
 
 	def __str__(self):
 		return str(self.canvas)
