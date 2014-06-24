@@ -25,7 +25,7 @@ The above is an example of possible input. For instance the first item in the li
 
 # Output
 
-The program produces an ASCII art visualization that shows the resulting tree, which might look similar to the example below.
+The program produces an ASCII art visualization that shows the resulting tree, which might look similar to the example below. Text art was used instead of a PNG image so that the program would have no dependencies to image libraries.
 
 	     hearing loss
 	   _______|_______
