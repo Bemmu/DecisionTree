@@ -124,12 +124,20 @@ class TextTree(object):
 	#   ))
 	#  ))
 	# )
-	def __init__(self, data = ('root', ('foo', 'leaf'), ('bar', ('node', (('buz', 'yeah'), ('boo', 'what')))))):
+	def __init__(self, data = ('root', ('foo', ('leaf', )), ('bar', ('node', (('buz', ('yeah', )), ('boo', ('what', ))))))):
 		self.data = data
 		self.canvas = TextCanvas()
 		self.draw()
 
+	# From http://stackoverflow.com/questions/10482339/how-to-find-median
+	@classmethod
+	def median(cls, lst):
+	    even = (0 if len(lst) % 2 else 1) + 1
+	    half = (len(lst) - 1) / 2
+	    return sum(sorted(lst)[half:half + even]) / float(even)
+
 	def draw(self):
+
 		# To draw a tree, need to draw the subtrees. Then connect those subtree drawings with a stem and
 		# put a label on top. Let's start with the label.
 
@@ -157,10 +165,14 @@ class TextTree(object):
 		title_x_position = math.ceil((1.0-len(title))/2.0) # gradually goes more to the left
 		self.canvas.set(title, title_x_position, 0)
 
+		# If there are no subtrees then we are done.
+		subtrees = self.data[1:] if type(self.data[1:]) == tuple else (self.data[1:])
+
+		if not subtrees:
+			return
+
 		# Next the stem is only needed if there are some subtrees
-		subtrees = self.data[1:]
-		if len(subtrees) > 0:
-			self.canvas.set('|', stem_x_position, 1)
+		self.canvas.set('|', stem_x_position, 1)
 
 		# Where to place those subtrees exactly isn't known until the width of subtree drawings is known.
 		# So draw them all and then move them into place.
@@ -177,8 +189,8 @@ class TextTree(object):
 		#         |
 		#                
 		# 1111112222223333333
-		total_width = sum([canvas.width() for canvas in canvases])
-		x = math.ceil((1.0-total_width)/2.0)
+		# total_width = sum([canvas.width() for canvas in canvases])
+		# x = math.ceil((1.0-total_width)/2.0)
 
 		# Wait this isn't right. The X calculated here would be the upper left of the block of subtrees.
 		# But the offset given to blit_to is where the center of the tree should go.
@@ -213,28 +225,32 @@ class TextTree(object):
 		# It can't be so that the solution is different depending on the parity... solutions tend to be more clean than that.
 		# Maybe if I write out the code, then the commonalities will become apparent.
 
-		if (len(canvases)%2) == 0: # even
-			pass
-		else: # odd
+		# if (len(canvases)%2) == 0: # even
+		# 	print "even"
+		# 	pass
+		# else: # odd
 
-			x_centers = []
+		x_centers = []
 
-			# Start at the leftmost point in the first canvas
-			current_x = math.ceil((1.0-canvases[0].width())/2.0)
+		# Start at the leftmost point in the first canvas
+		current_x = math.ceil((1.0-canvases[0].width())/2.0)
 
-			for canvas in canvases:
+		for canvas in canvases:
 
-				# Go to the center position of the current canvas
-				current_x -= math.ceil((1.0-canvas.width())/2.0)
+			# Go to the center position of the current canvas
+			current_x -= math.ceil((1.0-canvas.width())/2.0)
 
-				x_centers.append(current_x)
+			x_centers.append(current_x)
 
-				# Go to the leftmost position of the next canvas
-				current_x += math.ceil((1.0-canvas.width())/2.0) + canvas.width()
+			# Go to the leftmost position of the next canvas
+			current_x += math.ceil((1.0-canvas.width())/2.0) + canvas.width()
 
-			# Now the x_center of the centermost canvas should be 0. Adjust all so that it is.
-			adjustment = -x_centers[len(x_centers)/2]
-			x_centers = [x + adjustment for x in x_centers]
+		# Now the x_center of the centermost canvas should be 0. Adjust all so that it is.
+
+		#adjustment = -x_centers[len(x_centers)/2]
+		adjustment = -self.median(x_centers)
+
+		x_centers = [x + adjustment for x in x_centers]
 
 		# Finally connect stems to centers of each subtree.
 		#
@@ -259,7 +275,6 @@ class TextTree(object):
 		#   title
 		#     |
 		#   title
-
 
 	def get_canvas(self):
 		return self.canvas
