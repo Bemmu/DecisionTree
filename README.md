@@ -32,7 +32,7 @@ The program produces an ASCII art visualization that shows the resulting tree, w
       |              |
      yes             no
       |              |
-   not-BPV         injury
+    not-BPV        injury
 	             ____|____
 	            |         |
 	           yes       no
