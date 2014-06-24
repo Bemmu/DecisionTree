@@ -25,7 +25,19 @@ The above is an example of possible input. For instance the first item in the li
 
 # Output
 
-The program produces a text visualization that shows the resulting tree.
+The program produces an ASCII art visualization that shows the resulting tree, which might look similar to the example below.
+
+	     hearing loss
+	   _______|_______
+      |              |
+     yes             no
+      |              |
+   not-BPV         injury
+	             ____|____
+	            |         |
+	           yes       no
+                |         |
+               BPV     not-BPV
 
 # What the program does
 
