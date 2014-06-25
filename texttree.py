@@ -140,38 +140,38 @@ class TextTree(object):
 	
 	def __init__(self, data = 
 		(
-			'root',
-			('left',),
-			('right',)
+			'root', 
+			(
+				'foo', 
+				(
+					'leaf', 
+				)
+			), 
+			(
+				'bar', 
+				(
+					'node', 
+					(
+						'buz', 
+						(
+							'yeah', 
+						)
+					), 
+					(
+						'boo', 
+						(
+							'what', 
+						)
+					),
+					(
+						'hoo', 
+						(
+							'ever', 
+						)
+					)
+				)
+			)
 		)
-
-		# (
-		# 	'root', 
-		# 	(
-		# 		'foo', 
-		# 		(
-		# 			'leaf', 
-		# 		)
-		# 	), 
-		# 	(
-		# 		'bar', 
-		# 		(
-		# 			'node', 
-		# 			(
-		# 				'buz', 
-		# 				(
-		# 					'yeah', 
-		# 				)
-		# 			), 
-		# 			(
-		# 				'boo', 
-		# 				(
-		# 					'what', 
-		# 				)
-		# 			)
-		# 		)
-		# 	)
-		# )
 	):
 		self.data = data
 		self.canvas = TextCanvas()
@@ -184,7 +184,7 @@ class TextTree(object):
 	    half = (len(lst) - 1) / 2
 	    return sum(sorted(lst)[half:half + even]) / float(even)
 
-	def draw_title(self, title):
+	def draw_title(self, title, padding = 2):
 		# To draw a tree, need to draw the subtrees. Then connect those subtree drawings with a stem and
 		# put a label on top. Let's start with the label.
 
@@ -206,11 +206,29 @@ class TextTree(object):
 		#   |   (0, 0)
 
 		# Set the title corresponding to the sketches above
-		title = self.data[0]
+		title = " "*padding + title + " "*padding
 		title_x_position = math.ceil((1.0-len(title))/2.0) # gradually goes more to the left
 		print "Putting the title", title, "at position", title_x_position
 
 		self.canvas.set(title, title_x_position, 0)
+
+	def x_centers(self, canvases):
+		x_centers = []
+
+		# Start at the leftmost point in the first canvas
+		current_x = math.ceil((1.0-canvases[0].width())/2.0)
+
+		for i, canvas in enumerate(canvases):
+
+			# Go to the center position of the current canvas
+			current_x -= math.ceil((1.0-canvas.width())/2.0)
+
+			x_centers.append(current_x)
+
+			# Go to the leftmost position of the next canvas
+			current_x += math.ceil((1.0-canvas.width())/2.0) + canvas.width()
+
+		return x_centers
 
 	def draw(self):
 		title, subtrees = self.data[0], self.data[1:]
@@ -241,21 +259,11 @@ class TextTree(object):
 		#         |
 		#                
 		# 1111112222223333333
-		# total_width = sum([canvas.width() for canvas in canvases])
-		# x = math.ceil((1.0-total_width)/2.0)
-
-		# Wait this isn't right. The X calculated here would be the upper left of the block of subtrees.
-		# But the offset given to blit_to is where the center of the tree should go.
-
-		# So if I blit to 0, 0 then the stem part would end up 0, 1.
-
-		# Things I know:
-		#  - If there is an odd amount of boxes then the stem inside center has to align with the stem outside.
-		#  - The solution will look like a formula involving ceil/floor most likely.
-		#  - The outcome? At least the outcome needs to tell me at which X position to blit each box.
-		#  - Inputs? Maybe just the total_width would be enough?
-		# 
-		# Can that really be enough? Consider these two cases:
+		#
+		# This layout problem is a bit hairier than just centering the blocks, as we would prefer the box below 
+		# to align with the stem | under the label.
+		#
+		# Consider these two cases:
 		#
 		#     title
 		#       |
@@ -267,54 +275,10 @@ class TextTree(object):
 		#       |
 		#      1233
 		#
-		# Despite the total width being the same, actually the x-position is different!
-		# So somehow the positioning DOES depend on the individual box size and total_width is not enough.
+		# Despite the total width being the same, actually they are placed differently! Turns out the solution
+		# is to place them according to the median point of the box centers.
 		#
-		# What if I as a human being did this? How would I do it?
-		# Well if I had an odd number of boxes, I would place the middle one right under the parent and then lay out the rest on the sides.
-		# If I had an even number of boxes, I would just place them side by side and offset x so that they would be roughly in the center.
-		#
-		# It can't be so that the solution is different depending on the parity... solutions tend to be more clean than that.
-		# Maybe if I write out the code, then the commonalities will become apparent.
-
-		# if (len(canvases)%2) == 0: # even
-		# 	print "even"
-		# 	pass
-		# else: # odd
-
-
-		#                root
-		#                 |
-
-		#            |    |
-		#           leftright
-		#
-		#
-		#
-		#
-		#
-
-		x_centers = []
-
-		# Start at the leftmost point in the first canvas
-		current_x = math.ceil((1.0-canvases[0].width())/2.0)
-
-		if len(canvases) == 2:
-			print "Start at ",current_x
-
-		for i, canvas in enumerate(canvases):
-
-			print "Current canvas width is ",canvas.width()
-
-			# Go to the center position of the current canvas
-			current_x -= math.ceil((1.0-canvas.width())/2.0)
-			print "Center of current canvas would be ",current_x
-
-			x_centers.append(current_x)
-
-			# Go to the leftmost position of the next canvas
-			current_x += math.ceil((1.0-canvas.width())/2.0) + canvas.width()
-			print "Leftmost on next canvas would be", current_x
+		x_centers = self.x_centers(canvases)
 
 		# Now the x_center of the centermost canvas should be 0. Adjust all so that it is.
 
