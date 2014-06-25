@@ -1,3 +1,5 @@
+import math
+
 # Need to recurse to the end, otherwise cannot know how large a branch would be and would not
 # know how much space to allocate for it.
 
@@ -83,7 +85,7 @@ class TextCanvas(object):
 	def blit_to(self, other_canvas, offset_x = 0, offset_y = 0):
 		"""Blit the contents of this canvas to another canvas, possibly at different coordinates."""
 		for key, value in self.canvas.items():
-			x, y = key.split('_')
+			x, y = [int(coord) for coord in key.split('_')]
 			x += offset_x
 			y += offset_y
 			other_canvas.set(value, x, y)
@@ -118,13 +120,53 @@ class TextTree(object):
 	#   ('leaf')
 	#  ),
 	#  ('bar', (
-	#   ('node', (
+	#   'node', (
 	#    ('buz', ('yeah')),
 	#    ('boo', ('what'))
-	#   ))
+	#   )
 	#  ))
 	# )
-	def __init__(self, data = ('root', ('foo', ('leaf', )), ('bar', ('node', (('buz', ('yeah', )), ('boo', ('what', ))))))):
+	#
+	# root
+	# |
+	# +-- foo -- leaf
+	# |
+	# +-- bar -- node
+	#              |
+	#              +-- buz -- yeah
+	#              |
+	#              +-- boo -- what
+	#   
+	
+	def __init__(self, data = 
+		(
+			'root', 
+			(
+				'foo', 
+				(
+					'leaf', 
+				)
+			), 
+			(
+				'bar', 
+				(
+					'node', 
+					(
+						'buz', 
+						(
+							'yeah', 
+						)
+					), 
+					(
+						'boo', 
+						(
+							'what', 
+						)
+					)
+				)
+			)
+		)
+	):
 		self.data = data
 		self.canvas = TextCanvas()
 		self.draw()
@@ -136,8 +178,7 @@ class TextTree(object):
 	    half = (len(lst) - 1) / 2
 	    return sum(sorted(lst)[half:half + even]) / float(even)
 
-	def draw(self):
-
+	def draw_title(self, title):
 		# To draw a tree, need to draw the subtrees. Then connect those subtree drawings with a stem and
 		# put a label on top. Let's start with the label.
 
@@ -160,24 +201,29 @@ class TextTree(object):
 
 		# Set the title corresponding to the sketches above
 		title = self.data[0]
-		stem_x_position = 0 # always in center
-		import math
 		title_x_position = math.ceil((1.0-len(title))/2.0) # gradually goes more to the left
+		print "Putting the title", title, "at position", title_x_position
+
 		self.canvas.set(title, title_x_position, 0)
 
-		# If there are no subtrees then we are done.
-		subtrees = self.data[1:] if type(self.data[1:]) == tuple else (self.data[1:])
+	def draw(self):
+		title, subtrees = self.data[0], self.data[1:]
+		print "Title is ", title, " subtrees is ", subtrees
 
+		self.draw_title(title)
+
+		# If there are no subtrees then we are done
 		if not subtrees:
 			return
 
-		# Next the stem is only needed if there are some subtrees
-		self.canvas.set('|', stem_x_position, 1)
+		# Stem is only needed if there are some subtrees
+		self.canvas.set('|', 0, 1)
 
 		# Where to place those subtrees exactly isn't known until the width of subtree drawings is known.
 		# So draw them all and then move them into place.
 		canvases = []
 		for subtree in subtrees:
+			print "drawing subtree %s" % str(subtree)
 			tree = TextTree(subtree)
 			tree.draw()
 			canvases.append(tree.get_canvas())
@@ -235,7 +281,7 @@ class TextTree(object):
 		# Start at the leftmost point in the first canvas
 		current_x = math.ceil((1.0-canvases[0].width())/2.0)
 
-		for canvas in canvases:
+		for i, canvas in enumerate(canvases):
 
 			# Go to the center position of the current canvas
 			current_x -= math.ceil((1.0-canvas.width())/2.0)
@@ -248,9 +294,17 @@ class TextTree(object):
 		# Now the x_center of the centermost canvas should be 0. Adjust all so that it is.
 
 		#adjustment = -x_centers[len(x_centers)/2]
-		adjustment = -self.median(x_centers)
+
+		# If there are odd number of items, adjust so that the middle one is at 0. If there are
+		# an even number then... well adjust so that the center falls between them. In other words: median.
+		adjustment = math.floor(-self.median(x_centers))
 
 		x_centers = [x + adjustment for x in x_centers]
+		print "x_centers for ", subtrees, " are ", x_centers
+
+		# Draw each canvas in the computed center
+		for canvas, x_center in zip(canvases, x_centers):
+			canvas.blit_to(self.canvas, x_center, 3)
 
 		# Finally connect stems to centers of each subtree.
 		#
