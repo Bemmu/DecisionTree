@@ -61,7 +61,7 @@ class TextCanvas(object):
 
 	def width(self):
 		bounds = self.bounds()
-		return bounds[2] - bounds[0] 
+ 		return bounds[2] - bounds[0] + 1 
 
 	def __str__(self):
 		if len(self.canvas.keys()) == 0:
@@ -140,32 +140,38 @@ class TextTree(object):
 	
 	def __init__(self, data = 
 		(
-			'root', 
-			(
-				'foo', 
-				(
-					'leaf', 
-				)
-			), 
-			(
-				'bar', 
-				(
-					'node', 
-					(
-						'buz', 
-						(
-							'yeah', 
-						)
-					), 
-					(
-						'boo', 
-						(
-							'what', 
-						)
-					)
-				)
-			)
+			'root',
+			('left',),
+			('right',)
 		)
+
+		# (
+		# 	'root', 
+		# 	(
+		# 		'foo', 
+		# 		(
+		# 			'leaf', 
+		# 		)
+		# 	), 
+		# 	(
+		# 		'bar', 
+		# 		(
+		# 			'node', 
+		# 			(
+		# 				'buz', 
+		# 				(
+		# 					'yeah', 
+		# 				)
+		# 			), 
+		# 			(
+		# 				'boo', 
+		# 				(
+		# 					'what', 
+		# 				)
+		# 			)
+		# 		)
+		# 	)
+		# )
 	):
 		self.data = data
 		self.canvas = TextCanvas()
@@ -276,20 +282,39 @@ class TextTree(object):
 		# 	pass
 		# else: # odd
 
+
+		#                root
+		#                 |
+
+		#            |    |
+		#           leftright
+		#
+		#
+		#
+		#
+		#
+
 		x_centers = []
 
 		# Start at the leftmost point in the first canvas
 		current_x = math.ceil((1.0-canvases[0].width())/2.0)
 
+		if len(canvases) == 2:
+			print "Start at ",current_x
+
 		for i, canvas in enumerate(canvases):
+
+			print "Current canvas width is ",canvas.width()
 
 			# Go to the center position of the current canvas
 			current_x -= math.ceil((1.0-canvas.width())/2.0)
+			print "Center of current canvas would be ",current_x
 
 			x_centers.append(current_x)
 
 			# Go to the leftmost position of the next canvas
 			current_x += math.ceil((1.0-canvas.width())/2.0) + canvas.width()
+			print "Leftmost on next canvas would be", current_x
 
 		# Now the x_center of the centermost canvas should be 0. Adjust all so that it is.
 
@@ -299,6 +324,7 @@ class TextTree(object):
 		# an even number then... well adjust so that the center falls between them. In other words: median.
 		adjustment = math.floor(-self.median(x_centers))
 
+		print "x_centers for ", subtrees, " are ", x_centers
 		x_centers = [x + adjustment for x in x_centers]
 		print "x_centers for ", subtrees, " are ", x_centers
 
