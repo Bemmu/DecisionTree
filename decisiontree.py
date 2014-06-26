@@ -29,7 +29,7 @@ def unique_values(training_set, attribute):
 	values = [x[attribute] for x in training_set]
 	return dict([(a, '') for a in values]).keys()
 
-def something(training_set, attr, value):
+def branch_on_attribute(training_set, attr, value):
 
 	# Only include cases where attribute has the given value
 	training_set = [c for c in training_set if c[attr] == value]
@@ -65,7 +65,7 @@ def tree(training_set):
    		return (likeliest_class,)
 
 	values = sorted(unique_values(training_set, attr))
-	return (attr,) + tuple([(value,tree(something(training_set, attr, value))) for value in values])
+	return (attr,) + tuple([(value,tree(branch_on_attribute(training_set, attr, value))) for value in values])
 
 tt = TextTree(tree(training_set))
 print str(tt)

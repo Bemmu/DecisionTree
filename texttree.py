@@ -159,14 +159,12 @@ class TextTree(object):
 		# Stem and drawing of subtrees is only needed if there are some.
 		if not subtrees:
 			return
-		self._canvas.set('|', 0, 1)
 
 		# Where to place those subtrees exactly isn't known until the width of subtree drawings is known.
 		# So draw them all and then move them into place.
 		canvases = []
 		for subtree in subtrees:
 			tree = TextTree(subtree)
-			#tree.draw()
 			canvases.append(tree.get_canvas())
 
 		# Now at this point we've drawn the title and the vertical bit of stem and know how big the subtrees
@@ -204,6 +202,10 @@ class TextTree(object):
 		for canvas, x_center in zip(canvases, x_centers):
 			canvas.blit_to(self._canvas, x_center, 3)
 
+		r = range(1 + int(math.ceil(x_centers[0])), int(math.ceil(x_centers[-1])))
+		for x in r:
+			self._canvas.set('_', x, 1)
+
 		# Finally connect stems to centers of each subtree.
 		#
 		#       title
@@ -212,15 +214,8 @@ class TextTree(object):
 		# 1111112222223333333
 		for x_center in x_centers:
 			self._canvas.set('|', x_center, 2)
-		self._draw_horizontal_stem((0, 1), int(x_centers[-1] - x_centers[0]))
 
-	# Draw part that looks like          ______|_______
-	#
-	def _draw_horizontal_stem(self, midpoint, stem_length):
-		for i in range(1, stem_length):
-			x = midpoint[0] + i - stem_length/2 
-			if x != midpoint[0]:
-				self._canvas.set('_', x, midpoint[1])
+		self._canvas.set('|', 0, 1)
 
 	def __str__(self):
 		return str(self._canvas)
