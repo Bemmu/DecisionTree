@@ -208,7 +208,6 @@ class TextTree(object):
 		# Set the title corresponding to the sketches above
 		title = " "*padding + title + " "*padding
 		title_x_position = math.ceil((1.0-len(title))/2.0) # gradually goes more to the left
-		print "Putting the title", title, "at position", title_x_position
 
 		self.canvas.set(title, title_x_position, 0)
 
@@ -232,22 +231,18 @@ class TextTree(object):
 
 	def draw(self):
 		title, subtrees = self.data[0], self.data[1:]
-		print "Title is ", title, " subtrees is ", subtrees
 
 		self.draw_title(title)
 
-		# If there are no subtrees then we are done
+		# Stem and drawing of subtrees is only needed if there are some.
 		if not subtrees:
 			return
-
-		# Stem is only needed if there are some subtrees
 		self.canvas.set('|', 0, 1)
 
 		# Where to place those subtrees exactly isn't known until the width of subtree drawings is known.
 		# So draw them all and then move them into place.
 		canvases = []
 		for subtree in subtrees:
-			print "drawing subtree %s" % str(subtree)
 			tree = TextTree(subtree)
 			tree.draw()
 			canvases.append(tree.get_canvas())
@@ -276,21 +271,12 @@ class TextTree(object):
 		#      1233
 		#
 		# Despite the total width being the same, actually they are placed differently! Turns out the solution
-		# is to place them according to the median point of the box centers.
+		# is to place them according to the median point of the box centers. That way the middle one will end up
+		# at 0 or if there is no middle, then the midpoint ends up at 0.
 		#
 		x_centers = self.x_centers(canvases)
-
-		# Now the x_center of the centermost canvas should be 0. Adjust all so that it is.
-
-		#adjustment = -x_centers[len(x_centers)/2]
-
-		# If there are odd number of items, adjust so that the middle one is at 0. If there are
-		# an even number then... well adjust so that the center falls between them. In other words: median.
 		adjustment = math.floor(-self.median(x_centers))
-
-		print "x_centers for ", subtrees, " are ", x_centers
 		x_centers = [x + adjustment for x in x_centers]
-		print "x_centers for ", subtrees, " are ", x_centers
 
 		# Draw each canvas in the computed center
 		for canvas, x_center in zip(canvases, x_centers):
@@ -302,23 +288,9 @@ class TextTree(object):
 		#    _____|_____
 		#   |     |     |
 		# 1111112222223333333
-		#
-		# How do I know what the "center point" of each subtree is. It has to be correct, otherwise
-		# the stems in the subtree will look weird.
-		#
-		#   title
-		#     |
-		#   11111
-		#   11111
-		#   11111
-		#
-		# In the above case the subtree might be another single-child tree:
-		#
-		#   title
-		#     |
-		#   title
-		#     |
-		#   title
+		for x_center in x_centers:
+			self.canvas.set('|', x_center, 2)
+		self.draw_horizontal_stem((0, 1), int(x_centers[-1] - x_centers[0]))
 
 	def get_canvas(self):
 		return self.canvas
@@ -326,10 +298,10 @@ class TextTree(object):
 	# Draw part that looks like          ______|_______
 	#
 	def draw_horizontal_stem(self, midpoint, stem_length):
-		for i in range(0, stem_length):
+		for i in range(1, stem_length):
 			x = midpoint[0] + i - stem_length/2 
-			ch = '|' if x == midpoint[0] else '_'
-			self.canvas.set(ch, x, midpoint[1])
+			if x != midpoint[0]:
+				self.canvas.set('_', x, midpoint[1])
 
 	# Draw part that looks like        ________|_________
 	#                                 /      /    \      \
