@@ -46,9 +46,7 @@ The program produces an ASCII art visualization that shows the resulting tree, w
 The program is basically a Python implementation of a set of equations given in the '[Knowledge Discovery](http://www.uta.fi/sis/tie/timu/timu_eng.html)' course material, along with some code to split the data
 set based on the results and then some ASCII art code to visualize the splits as a tree.
 
-To understand what is going on here, I recommend watching [this video](https://www.youtube.com/watch?v=-dCtJjlEEgM). The key decision to make is which attribute to split the data on. Some attributes will provide more information than others. 
-
-To decide which attribute to branch on, some calculations are made based on equations given in the Knowledge Discovery course material. Here are all the equations and their corresponding functions in Python. The code for each function could be much shorter, but includes some printouts that make the code a bit longer but easier to follow while running.
+To understand what is going on here, I recommend watching [this video](https://www.youtube.com/watch?v=-dCtJjlEEgM). The key decision to make is which attribute to split the data on. Some attributes will provide more information than others and the split is based on the attribute with the highest information gain. Here are all the equations and their corresponding functions in Python. The code for each function could be much shorter if it wasn't for the debug printouts that are shown in case debug mode is enabled.
 
 The entropy function "H(S)" in the python code implements the equation
 
