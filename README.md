@@ -25,7 +25,7 @@ The above is an example of possible input. For instance the first item in the li
 
 # Output
 
-The program produces an ASCII art visualization that shows the resulting tree, which might look similar to the example below. Text art was used so that the program would need no dependencies to image libraries.
+The program produces an ASCII art visualization that shows the resulting tree, which might look similar to the example below. Text art was used to avoid having a dependency to an image library.
 
 	     hearing loss
 	   _______|_______
@@ -39,9 +39,12 @@ The program produces an ASCII art visualization that shows the resulting tree, w
                 |         |
                BPV     not-BPV
 
-# What the program does
+# What the program calculates
 
 ## Equations
+
+The program is basically a Python implementation of a set of equations given in the '[Knowledge Discovery](http://www.uta.fi/sis/tie/timu/timu_eng.html)' course material, along with some code to split the data
+set based on the results and then some ASCII art code to visualize the splits as a tree.
 
 To understand what is going on here, I recommend watching [this video](https://www.youtube.com/watch?v=-dCtJjlEEgM). The key decision to make is which attribute to split the data on. Some attributes will provide more information than others. 
 
