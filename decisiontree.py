@@ -39,14 +39,7 @@ def branch_on_attribute(training_set, attr, value):
 
 	return training_set
 
-# [
-#	{'classes': {'BPV': 0, 'not-BPV': 63}, 'Injury': 'No', 'Frequency of vertigo attacks': '0'}, 
-#   {'classes': {'BPV': 0, 'not-BPV': 28}, 'Injury': 'No', 'Frequency of vertigo attacks': '1'}, 
-#   {'classes': {'BPV': 0, 'not-BPV': 234}, 'Injury': 'No', 'Frequency of vertigo attacks': '2'}, 
-#   {'classes': {'BPV': 0, 'not-BPV': 1}, 'Frequency of vertigo attacks': '1'}, 
-#   {'classes': {'BPV': 0, 'not-BPV': 30}, 'Frequency of vertigo attacks': '2'}]
-
-def tree(training_set):
+def make_decision_tree(training_set):
 	# The tree is the attribute to split on and subtrees have the different values of the attribute, under which are the next splits.
 	#
 	#  Attribute  
@@ -65,7 +58,4 @@ def tree(training_set):
    		return (likeliest_class,)
 
 	values = sorted(unique_values(training_set, attr))
-	return (attr,) + tuple([(value,tree(branch_on_attribute(training_set, attr, value))) for value in values])
-
-tt = TextTree(tree(training_set))
-print str(tt)
+	return (attr,) + tuple([(value,make_decision_tree(branch_on_attribute(training_set, attr, value))) for value in values])
