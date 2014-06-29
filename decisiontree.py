@@ -1,17 +1,9 @@
+# Functions for constructing a top-down decision tree (TDIDT).
+
+# Need to add a "stopping criterion" here.
+
 from equations import *
 from texttree import TextTree
-
-training_set = [
-	{'Hearing loss':'No', 'Injury':'No', 'Frequency of vertigo attacks':'0', 'classes' : {'not-BPV':3, 'BPV':0}},
-	{'Hearing loss':'No', 'Injury':'No', 'Frequency of vertigo attacks':'1', 'classes' : {'not-BPV':59, 'BPV':0}},
-	{'Hearing loss':'No', 'Injury':'No', 'Frequency of vertigo attacks':'2', 'classes' : {'not-BPV':1, 'BPV':55}},
-	{'Hearing loss':'No', 'Injury':'Yes', 'Frequency of vertigo attacks':'2', 'classes' : {'not-BPV':21, 'BPV':1}},
-	{'Hearing loss':'Yes', 'Injury':'No', 'Frequency of vertigo attacks':'0', 'classes' : {'not-BPV':63, 'BPV':0}},
-	{'Hearing loss':'Yes', 'Injury':'No', 'Frequency of vertigo attacks':'1', 'classes' : {'not-BPV':28, 'BPV':0}},
-	{'Hearing loss':'Yes', 'Injury':'No', 'Frequency of vertigo attacks':'2', 'classes' : {'not-BPV':234, 'BPV':0}},
-	{'Hearing loss':'Yes', 'Injury':'Yes', 'Frequency of vertigo attacks':'1', 'classes' : {'not-BPV':1, 'BPV':0}},
-	{'Hearing loss':'Yes', 'Injury':'Yes', 'Frequency of vertigo attacks':'2', 'classes' : {'not-BPV':30, 'BPV':0}},
-]
 
 def find_best_attribute_to_split_on(training_set):
 	"""Which attribute has the highest information gain?"""
@@ -39,6 +31,30 @@ def branch_on_attribute(training_set, attr, value):
 
 	return training_set
 
+def stopping_criterion_met(training_set):
+
+	# Split recursively until all cases in same class.
+
+	# Find if all in same class...
+
+	# So at least will need to look at each training set
+	# And attributes don't matter, just looking at classes so...
+
+	# All are in same class if... ?
+
+	class_memberships = [x['classes'] for x in training_set]
+	classes_with_members = [[k for k,v in single.items() if v > 0] for single in class_memberships]
+	flattened = reduce(lambda a,b:a+b, classes_with_members)
+	uniqued = list(set(flattened))
+	return len(uniqued) == 1
+
+	# Ugh I'm feeling stupid today :-/
+
+	# Approach: count for each class how many members it has.
+	# Then if all except one have zero membership then true.
+
+	return False
+
 def make_decision_tree(training_set):
 	# The tree is the attribute to split on and subtrees have the different values of the attribute, under which are the next splits.
 	#
@@ -52,10 +68,15 @@ def make_decision_tree(training_set):
  	#  attr  attr
 	#  tree  tree
 	#
+
    	attr = find_best_attribute_to_split_on(training_set)
-   	if attr is None:
+   	if stopping_criterion_met(training_set) or attr is None:
+
+   		# If there are no more attributes to split on, pick class based on majority.
    		likeliest_class = sorted(training_set[0]['classes'].items(), cmp=lambda a,b:b[1]-a[1])[0][0]
    		return (likeliest_class,)
 
+   	# Nodes are all the possible values of the picked attribute, sorted to alphabetical order.
 	values = sorted(unique_values(training_set, attr))
-	return (attr,) + tuple([(value,make_decision_tree(branch_on_attribute(training_set, attr, value))) for value in values])
+	child_nodes = tuple([(value,make_decision_tree(branch_on_attribute(training_set, attr, value))) for value in values])
+	return (attr,) + child_nodes
